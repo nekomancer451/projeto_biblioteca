@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Lista de Livros</h2>
+{% if livros %}
+<ul>
+    {% for livro in livros %}
+    <li><strong>{{ livro["titulo"] }}</strong> - {{ livro["autor"] }} ({{ livro["ano"] }}) [ISBN: {{ livro["isbn"] }}]</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Nenhum livro cadastrado.</p>
+{% endif %}
+{% endblock %}
