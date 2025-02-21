@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Livros</title>
+</head>
+<body>
+    <h1>Lista de Livros</h1>
+    <form method="GET" action="{{ url_for('listar_livros') }}">
+        <label for="ordenar_por">Ordenar por:</label>
+        <select name="ordenar_por" id="ordenar_por">
+            <option value="titulo_asc">Título (A-Z)</option>
+            <option value="titulo_desc">Título (Z-A)</option>
+            <option value="ano_asc">Ano (Crescente)</option>
+            <option value="ano_desc">Ano (Decrescente)</option>
+        </select>
+        <button type="submit">Ordenar</button>
+    </form>
+
+    {% if livros %}
+        <ul>
+            {% for livro in livros %}
+                <li>
+                    <strong>{{ livro["titulo"] }}</strong> - {{ livro["autor"] }} ({{ livro["ano"] }}) - Editora: {{ livro["editora"] }} - Categoria: {{ livro["categoria"] }} [ISBN: {{ livro["isbn"] }}]
+                    <form method="POST" action="{{ url_for('excluir_livro', isbn=livro['isbn']) }}" style="display:inline;">
+                        <button type="submit">Excluir</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum livro cadastrado.</p>
+    {% endif %}
+</body>
+</html>
