@@ -14,7 +14,11 @@
         </select>
         <button type="submit">Ordenar</button>
     </form>
-
+    <form method="GET" action="{{ url_for('listar_livros') }}">
+        <input type="text" name="titulo" placeholder="Buscar por título..." value="{{ titulo_busca }}">
+        <button type="submit">Buscar</button>
+    </form>
+    
     {% if livros %}
         <ul>
             {% for livro in livros %}

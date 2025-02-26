@@ -10,9 +10,9 @@
     {
         "titulo": "Triste fim de Policarpo Quaresma",
         "autor": "Lima Barreto",
-        "isbn": "9788563560179",
+        "isbn": 9788563560179,
         "editora": "Penguin & companhia das letras",
-        "ano": "2011",
+        "ano": 2014,
         "categoria": "C"
     },
     {
@@ -30,5 +30,21 @@
         "editora": "Simon and Schuster",
         "ano": 2011,
         "categoria": "A"
+    },
+    {
+        "titulo": "The Sad End of Policarpo Quaresma",
+        "autor": "Lima Barreto",
+        "isbn": "9780141395715",
+        "editora": "Penguin UK",
+        "ano": 2014,
+        "categoria": ""
+    },
+    {
+        "titulo": "Memórias Postumar de Brás Cubas",
+        "autor": "Machado de Assis",
+        "isbn": 9780195101706,
+        "editora": "Oxford University Press, USA",
+        "ano": 1998,
+        "categoria": "C"
     }
 ]
