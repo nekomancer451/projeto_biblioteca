@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Biblioteca{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Busca por ISBN</a> |
+        <a href="{{ url_for('adicionar_livro') }}">Adicionar Livro Manualmente</a> |
+        <a href="{{ url_for('listar_livros') }}">Listar Livros</a> |
+        <a href="{{ url_for('buscar_livro') }}">Buscar por Título</a>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

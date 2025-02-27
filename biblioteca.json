@@ -46,5 +46,13 @@
         "editora": "Oxford University Press, USA",
         "ano": 1998,
         "categoria": "C"
+    },
+    {
+        "titulo": "Fahrenheit 451",
+        "autor": "Ray Bradbury",
+        "isbn": "9789897732461",
+        "editora": "Leya",
+        "ano": 2020,
+        "categoria": ""
     }
 ]

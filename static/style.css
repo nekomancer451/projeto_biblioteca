@@ -1,23 +1,147 @@
+/* Reset básico */
+* {
+    margin: 0; /* Remove a margem padrão dos elementos */
+    padding: 0; /* Remove o padding padrão dos elementos */
+    box-sizing: border-box; /* Garante que o padding e a borda não aumentem o tamanho do elemento */
+    font-family: Arial, sans-serif; /* Define a fonte padrão para toda a página */
+}
+
+/* Corpo da página */
 body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    margin: 4;
-    padding: 0;
+    background-color: #E4DFDA; /* Cor de fundo da página */
+    color: #333; /* Cor do texto (mais escuro para melhor legibilidade) */
+    line-height: 1.6; /* Aumenta o espaçamento entre as linhas de texto para facilitar a leitura */
+    padding: 20px; /* Adiciona espaçamento interno para a página */
+    display: flex; /* Define o layout como flexbox */
+    flex-direction: column; /* Organiza os elementos na vertical */
+    align-items: center; /* Centraliza os elementos dentro do container */
 }
 
-header {
-    background: #444;
-    color: #fff;
-    padding: 10px;
-    text-align: center;
+/* Cabeçalhos */
+h1, h2 {
+    color: #222; /* Cor dos cabeçalhos */
+    margin-bottom: 15px; /* Espaço abaixo dos cabeçalhos */
+    text-align: center; /* Centraliza o texto */
 }
 
-header nav a {
-    color: #fff;
-    margin: 0 10px;
-    text-decoration: none;
+/* Estilizando a navegação */
+nav {
+    background: #2374AB; /* Cor de fundo azul */
+    padding: 15px; /* Espaçamento interno */
+    text-align: center; /* Centraliza os links */
+    border-radius: 5px; /* Bordas arredondadas */
 }
 
-main {
-    padding: 20px;
+nav a {
+    color: white; /* Cor do texto dos links */
+    text-decoration: none; /* Remove o sublinhado dos links */
+    padding: 10px 15px; /* Espaçamento interno nos links */
+    font-weight: bold; /* Texto em negrito */
+}
+
+nav a:hover {
+    background: rgba(255, 255, 255, 0.3); /* Efeito de destaque ao passar o mouse */
+    border-radius: 3px; /* Bordas arredondadas no hover */
+}
+
+/* Centralizando e reduzindo os formulários */
+form {
+    margin-bottom: 20px; /* Espaço abaixo de cada formulário */
+    background: white; /* Fundo branco dos formulários */
+    padding: 15px; /* Espaçamento interno */
+    border-radius: 5px; /* Bordas arredondadas */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra leve para efeito flutuante */
+    width: 100%; /* O formulário ocupa toda a largura disponível */
+    max-width: 400px; /* Limita a largura máxima do formulário */
+}
+
+/* Inputs e botões */
+input, select, button {
+    padding: 10px; /* Espaçamento interno */
+    margin-top: 5px; /* Espaço no topo para separar os elementos */
+    width: 100%; /* Ocupam 100% da largura disponível */
+    border: 1px solid #ccc; /* Borda cinza clara */
+    border-radius: 5px; /* Bordas arredondadas */
+    font-size: 16px; /* Tamanho da fonte */
+}
+
+/* Estilizando a lista de livros */
+.book-list {
+    display: flex; /* Define o layout como flexbox */
+    flex-wrap: wrap; /* Permite quebra de linha se necessário */
+    gap: 15px; /* Espaçamento entre os itens da lista */
+    padding: 0; /* Remove o padding */
+    list-style: none; /* Remove o estilo de lista padrão */
+    justify-content: center; /* Centraliza os itens horizontalmente */
+}
+
+/* Cartão de livro */
+.book-card {
+    background: white; /* Fundo branco do cartão */
+    padding: 15px; /* Espaçamento interno do cartão */
+    border-radius: 5px; /* Bordas arredondadas */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    width: 400px; /* Largura fixa para o cartão */
+    position: relative; /* Permite posicionamento relativo para os botões */
+}
+
+/* ---- Inserindo a "tabela" interna para exibir os dados do livro ---- */
+/* A tabela exibe os dados em linhas com os rótulos e os valores */
+.book-card table {
+    width: 100%; /* A tabela ocupa toda a largura do cartão */
+    border-collapse: collapse; /* Remove os espaçamentos entre as bordas das células */
+}
+
+.book-card td {
+    padding: 8px; /* Espaçamento interno em cada célula */
+    border-bottom: 1px solid #ddd; /* Linha de separação entre as linhas */
+}
+
+.book-card td:first-child {
+    font-weight: bold; /* Os rótulos (ex.: Título, Ano) ficam em negrito */
+}
+
+.book-card tr:last-child td {
+    border-bottom: none; /* Remove a borda inferior da última linha para visual mais limpo */
+}
+/* --------------------------------------------------------------------- */
+
+/* Botões "Editar" e "Excluir" pequenos e alinhados */
+.book-card .buttons {
+    display: flex; /* Organiza os botões em linha usando flexbox */
+    justify-content: space-between; /* Distribui os botões com espaço entre eles */
+    margin-top: 10px; /* Espaço acima dos botões */
+}
+
+.book-card .buttons button {
+    background: #007BFF; /* Fundo azul padrão para os botões */
+    color: white; /* Texto branco */
+    border: none; /* Remove a borda padrão */
+    padding: 5px 10px; /* Espaçamento interno nos botões */
+    border-radius: 3px; /* Bordas levemente arredondadas */
+    cursor: pointer; /* Cursor pointer indica que o botão é clicável */
+    font-size: 14px; /* Tamanho da fonte dos botões */
+    flex: 1; /* Os botões dividem igualmente o espaço disponível */
+    margin: 0 3px; /* Espaçamento entre os botões */
+}
+
+.book-card .buttons .delete-button {
+    background: #DC3545; /* Fundo vermelho para o botão de exclusão */
+}
+
+.book-card .buttons button:hover {
+    opacity: 0.8; /* Efeito visual ao passar o mouse sobre os botões */
+}
+
+/* Responsividade: ajusta a largura dos cartões em telas menores */
+@media (max-width: 768px) {
+    .book-card {
+        width: calc(50% - 15px); /* Em telas menores, os cartões ocupam metade da largura disponível */
+    }
+}
+
+@media (max-width: 480px) {
+    .book-card {
+        width: 100%; /* Em telas muito pequenas, os cartões ocupam toda a largura */
+    }
 }

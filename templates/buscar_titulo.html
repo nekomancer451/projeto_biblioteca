@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Livros{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar por Título</title>
+</head>
+<body>
+    <h1>Buscar por Título</h1>
+    <form method="GET">
+        <input type="text" name="titulo" placeholder="Título do livro">
+        <button type="submit">Buscar</button>
+    </form>
+    <h2>Resultados da Busca</h2>
+    <ul>
+        {% for livro in resultados %}
+            <li>{{ livro.titulo }} - {{ livro.autor }} - {{ livro.isbn }}</li>
+            {% endfor %}
+    </ul>
+    </body>
+{% endblock %}

@@ -152,7 +152,7 @@ def buscar_livro():
                     "fonte": "Open Library"
                 })
 
-    return render_template("buscar.html", resultados=resultados)
+    return render_template("buscar_titulo.html", resultados=resultados)
 
 # Rota para listar livros
 @app.route("/livros")
