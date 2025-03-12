@@ -23,8 +23,9 @@
         <input type="text" id="ano" name="ano" value="{{ livro.ano }}" required><br>
         
         <label for="isbn">ISBN:</label>
-        <input type="text" id="isbn" name="isbn" value="{{ livro.isbn}}" required><br>
-
+        <!-- Corrigir o value do ISBN -->
+        <input type="text" id="isbn" name="isbn" value="{{ livro['isbn'] }}" required><br>
+        
         <label for="categoria">Categoria:</label>
         <input type="text" id="categoria" name="categoria" value="{{ livro.categoria }}" required><br>
         

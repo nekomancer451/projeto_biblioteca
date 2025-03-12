@@ -48,11 +48,12 @@
                     </tr>
                 </table>
                 <div class="buttons">
-                    <a href="{{ url_for('editar_livro', isbn=livro['isbn']) }}">
+                    <a href="{{ url_for('editar_livro', isbn=livro.isbn) }}">
                         <button class="edit-button">Editar</button>
                     </a>
-                    <form method="POST" action="{{ url_for('excluir_livro', isbn=livro['isbn']) }}" style="display:inline;">
-                        <button class="delete-button" type="submit">Excluir</button>
+
+                    <form method="POST" action="{{ url_for('excluir_livro', isbn=livro.isbn) }}" style="display:inline;" onsubmit="return confirmarExclusao()">
+                        <button type="submit" class="delete-button">Excluir</button>
                     </form>
                 </div>
             </div>
@@ -62,3 +63,8 @@
     <p>Nenhum livro cadastrado.</p>
 {% endif %}
 {% endblock %}
+<script>
+    function confirmarExclusao() {
+        return confirm("Tem certeza que deseja excluir este livro?");
+    }
+</script>

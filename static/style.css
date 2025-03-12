@@ -20,6 +20,7 @@ body {
 /* Cabeçalhos */
 h1, h2 {
     color: #222; /* Cor dos cabeçalhos */
+    margin-top: 15px;
     margin-bottom: 15px; /* Espaço abaixo dos cabeçalhos */
     text-align: center; /* Centraliza o texto */
 }
@@ -39,9 +40,17 @@ nav a {
     font-weight: bold; /* Texto em negrito */
 }
 
+/* Efeito para os botões em links (nav a) */
 nav a:hover {
-    background: rgba(255, 255, 255, 0.3); /* Efeito de destaque ao passar o mouse */
-    border-radius: 3px; /* Bordas arredondadas no hover */
+    background-color: rgba(255, 255, 255, 0.3); /* Efeito similar ao hover de botões */
+    border-radius: 3px;
+    transition: all 0.3s ease; /* Transição suave para todos os efeitos */
+}
+
+/* Efeito de clique para os links */
+nav a:active {
+    transform: scale(0.95); /* Reduz o tamanho do link ao ser clicado */
+    background-color: rgba(0, 0, 0, 0.1); /* Escurece ao clicar */
 }
 
 /* Centralizando e reduzindo os formulários */
@@ -63,6 +72,19 @@ input, select, button {
     border: 1px solid #ccc; /* Borda cinza clara */
     border-radius: 5px; /* Bordas arredondadas */
     font-size: 16px; /* Tamanho da fonte */
+}
+
+/* Efeito de hover para todos os botões */
+button:hover {
+    background-color: rgba(0, 0, 0, 0.1); /* Adiciona um fundo levemente escurecido ao passar o mouse */
+    cursor: pointer; /* Garantir que o cursor seja de 'mãozinha' */
+    transition: all 0.3s ease; /* Transição suave para todos os efeitos */
+}
+
+/* Efeito de clique para todos os botões */
+button:active {
+    transform: scale(0.95); /* Reduz o tamanho do botão ao ser clicado */
+    background-color: rgba(0, 0, 0, 0.2); /* Escurece um pouco mais ao clicar */
 }
 
 /* Estilizando a lista de livros */
@@ -125,12 +147,35 @@ input, select, button {
     margin: 0 3px; /* Espaçamento entre os botões */
 }
 
+.book-card .buttons form {
+    display: inline-block; /* Permite ajustar a largura do formulário */
+    margin: 0; /* Remove a margem */
+    padding: 0; /* Remove o padding */
+    width: auto; /* Ajusta a largura do formulário conforme o conteúdo */
+}
+
 .book-card .buttons .delete-button {
     background: #DC3545; /* Fundo vermelho para o botão de exclusão */
+    color: white; /* Texto branco */
+    border: none; /* Remove a borda padrão */
+    padding: 5px 10px; /* Espaçamento interno nos botões */
+    border-radius: 3px; /* Bordas levemente arredondadas */
+    cursor: pointer; /* Cursor pointer indica que o botão é clicável */
+    font-size: 14px; /* Tamanho da fonte dos botões */
+    margin: 0; /* Remove a margem */
+    width: auto; /* Ajusta a largura do botão conforme o conteúdo */
+    display: inline-block; /* Permite ajustar a largura do botão */
 }
 
 .book-card .buttons button:hover {
-    opacity: 0.8; /* Efeito visual ao passar o mouse sobre os botões */
+    opacity: 0.8; /* Efeito de opacidade ao passar o mouse */
+    background-color: rgba(0, 0, 0, 0.1); /* Leve escurecimento no fundo */
+}
+
+/* Efeito de clique para os botões dentro de cartões */
+.book-card .buttons button:active {
+    transform: scale(0.95); /* Reduz o tamanho dos botões ao clicar */
+    background-color: rgba(0, 0, 0, 0.2); /* Escurecimento mais forte */
 }
 
 /* Responsividade: ajusta a largura dos cartões em telas menores */
@@ -144,4 +189,81 @@ input, select, button {
     .book-card {
         width: 100%; /* Em telas muito pequenas, os cartões ocupam toda a largura */
     }
+}
+/* Estilos específicos para a tabela da página buscar_titulo */
+table.tabela-busca {
+    width: 100%;
+    border-collapse: collapse;
+    max-width: 1000px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+table.tabela-busca th,
+table.tabela-busca td {
+    border: 3px solid #E4DFDA;
+    padding: 4px;
+    text-align: left;
+    border-radius: 10px;
+    margin: 0;
+    vertical-align: middle;  /* Centraliza verticalmente o texto */
+    min-height: 50px; /* Define a altura mínima das células */
+}
+
+table.tabela-busca th {
+    background-color: #2374AB;
+    color: white;
+    text-align: center;
+    height: 40px; /* Ajuste o valor conforme necessário */
+}
+
+table.tabela-busca tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Definindo o tamanho máximo da largura de cada coluna */
+table.tabela-busca .titulo {
+    max-width: 250px;
+}
+
+table.tabela-busca .autor {
+    max-width: 125px;
+}
+
+table.tabela-busca .ano {
+    max-width: 50px;
+}
+
+table.tabela-busca .editora {
+    max-width: 125px;
+}
+
+table.tabela-busca .isbn {
+    max-width: 100px;
+}
+
+form.save-book-form {
+    background: transparent !important; /* remove o fundo branco */
+    display: inline-block; /* Permite ajustar a largura do formulário */
+    margin: 0; /* Remove a margem */
+    padding: 0; /* Remove o padding */
+    width: 50px /* Ajusta a largura do formulário conforme o conteúdo */
+}
+
+form.save-book-form button {
+    background: #28a745; /* Fundo verde para o botão de salvar */
+    color: white; /* Texto branco */
+    border: none; /* Remove a borda padrão */
+    padding: 5px 10px; /* Espaçamento interno nos botões */
+    border-radius: 3px; /* Bordas levemente arredondadas */
+    cursor: pointer; /* Cursor pointer indica que o botão é clicável */
+    font-size: 12px; /* Tamanho da fonte dos botões */
+    margin: 0; /* Remove a margem */
+    width: auto; /* Ajusta a largura do botão conforme o conteúdo */
+    display: inline-block; /* Permite ajustar a largura do botão */
+    text-align: center; /* Alinha o texto ao centro */
+}
+
+form.save-book-form button:hover {
+    opacity: 0.8; /* Efeito visual ao passar o mouse sobre os botões */
 }

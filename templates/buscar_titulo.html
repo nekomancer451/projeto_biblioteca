@@ -13,11 +13,40 @@
         <input type="text" name="titulo" placeholder="Título do livro">
         <button type="submit">Buscar</button>
     </form>
-    <h2>Resultados da Busca</h2>
-    <ul>
-        {% for livro in resultados %}
-            <li>{{ livro.titulo }} - {{ livro.autor }} - {{ livro.isbn }}</li>
-            {% endfor %}
-    </ul>
-    </body>
+    {% if resultados %}
+        <h2>Resultados da Busca</h2>
+        <table class="tabela-busca">
+            <thead>
+                <tr>
+                    <th class="titulo">Título</th>
+                    <th class="autor">Autor</th>
+                    <th class="editora">Editora</th>
+                    <th class="ano">Ano</th>
+                    <th class="isbn">ISBN</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for livro in resultados %}
+                    <tr>
+                        <td class="titulo">{{ livro.titulo }}</td>
+                        <td class="autor">{{ livro.autor }}</td>
+                        <td class="editora">{{ livro.editora }}</td>
+                        <td class="ano">{{ livro.ano }}</td>
+                        <td class="isbn">{{ livro.isbn }}</td>
+                        <td> <!-- acho que o problema está aqui -->
+                            <form method="POST" action="{{ url_for('save_book') }}" class="save-book-form">
+                                <input type="hidden" name="title" value="{{ livro.titulo }}">
+                                <input type="hidden" name="authors" value="{{ livro.autor }}">
+                                <input type="hidden" name="published_date" value="{{ livro.ano }}">
+                                <input type="hidden" name="publisher" value="{{ livro.editora }}">
+                                <input type="hidden" name="isbn" value="{{ livro.isbn }}">  <!-- Adicionado o campo ISBN -->
+                                <button type="submit">Salvar Livro</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}    
+</body>
 {% endblock %}

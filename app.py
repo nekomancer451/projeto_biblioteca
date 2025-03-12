@@ -16,10 +16,12 @@ def carregar_livros():
     except FileNotFoundError:
         return []
 
+# Função para salvar livros no arquivo JSON
 def salvar_livros(livros):
     with open("biblioteca.json", "w", encoding="utf-8") as arquivo:
         json.dump(livros, arquivo, indent=4, ensure_ascii=False)
 
+# Função para buscar livro por título
 def buscar_livro_por_titulo(titulo):
     livros = carregar_livros()
     return [livro for livro in livros if titulo.lower() in livro["titulo"].lower()]
@@ -121,36 +123,46 @@ def buscar_livro():
 
         # 1. Busca no Google Books
         google_url = f"https://www.googleapis.com/books/v1/volumes?q={titulo}&langRestrict=pt-BR"
-        google_response = requests.get(google_url)
-        if google_response.status_code == 200:
-            google_data = google_response.json()
-            for item in google_data.get("items", []):
-                volume_info = item["volumeInfo"]
-                resultados.append({
-                    "titulo": volume_info.get("title", "Sem título"),
-                    "autor": ", ".join(volume_info.get("authors", ["Desconhecido"])),
-                    "isbn": volume_info.get("industryIdentifiers", [{}])[0].get("identifier", "Sem ISBN"),
-                    "editora": volume_info.get("publisher", "Sem editora"),
-                    "ano": volume_info.get("publishedDate", "Sem data")[:4],
-                    "descricao": volume_info.get("description", ""),
-                    "fonte": "Google Books"
-                })
+        try:
+            google_response = requests.get(google_url)
+            if google_response.status_code == 200:
+                google_data = google_response.json()
+                for item in google_data.get("items", []):
+                    volume_info = item["volumeInfo"]
+                    resultados.append({
+                        "titulo": volume_info.get("title", "Sem título"),
+                        "autor": ", ".join(volume_info.get("authors", ["Desconhecido"])),
+                        "isbn": volume_info.get("industryIdentifiers", [{}])[0].get("identifier", "Sem ISBN"),
+                        "editora": volume_info.get("publisher", "Sem editora"),
+                        "ano": volume_info.get("publishedDate", "Sem data")[:4],
+                        "descricao": volume_info.get("description", ""),
+                        "fonte": "Google Books"
+                    })
+        except requests.exceptions.Timeout:
+            logging.error("A requisição para o Google Books demorou muito e foi cancelada.")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro na requisição para o Google Books: {e}")
 
         # 2. Busca na Open Library
         openlibrary_url = f"https://openlibrary.org/search.json?title={titulo}"
-        openlibrary_response = requests.get(openlibrary_url)
-        if openlibrary_response.status_code == 200:
-            openlibrary_data = openlibrary_response.json()
-            for doc in openlibrary_data.get("docs", []):
-                resultados.append({
-                    "titulo": doc.get("title", "Sem título"),
-                    "autor": ", ".join(doc.get("author_name", ["Desconhecido"])),
-                    "isbn": doc.get("isbn", ["Sem ISBN"])[0] if "isbn" in doc else "Sem ISBN",
-                    "editora": ", ".join(doc.get("publisher", ["Sem editora"])),
-                    "ano": doc.get("first_publish_year", "Sem data"),
-                    "descricao": doc.get("subject", "Sem descrição"),
-                    "fonte": "Open Library"
-                })
+        try:
+            openlibrary_response = requests.get(openlibrary_url)
+            if openlibrary_response.status_code == 200:
+                openlibrary_data = openlibrary_response.json()
+                for doc in openlibrary_data.get("docs", []):
+                    resultados.append({
+                        "titulo": doc.get("title", "Sem título"),
+                        "autor": ", ".join(doc.get("author_name", ["Desconhecido"])),
+                        "isbn": doc.get("isbn", ["Sem ISBN"])[0] if "isbn" in doc else "Sem ISBN",
+                        "editora": ", ".join(doc.get("publisher", ["Sem editora"])),
+                        "ano": doc.get("first_publish_year", "Sem data"),
+                        "descricao": doc.get("subject", "Sem descrição"),
+                        "fonte": "Open Library"
+                    })
+        except requests.exceptions.Timeout:
+            logging.error("A requisição para a Open Library demorou muito e foi cancelada.")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro na requisição para a Open Library: {e}")
 
     return render_template("buscar_titulo.html", resultados=resultados)
 
@@ -200,20 +212,20 @@ def adicionar_livro():
         return redirect(url_for("listar_livros"))
     return render_template("adicionar_livro.html")
 
-@app.route("/editar_livro/<isbn>", methods=["GET", "POST"])
+@app.route("/editar/<isbn>", methods=["GET", "POST"])
 def editar_livro(isbn):
     livros = carregar_livros()
     livro = next((livro for livro in livros if livro["isbn"] == isbn), None)
     
     if not livro:
-        return "Livro não encontrado.", 404
+        return "Livro não encontrado", 404
 
     if request.method == "POST":
         livro["titulo"] = request.form["titulo"]
         livro["autor"] = request.form["autor"]
         livro["editora"] = request.form["editora"]
         livro["ano"] = int(request.form["ano"]) if request.form["ano"].isdigit() else 0
-        livro["isbn"] = int(request.form["isbn"]) if request.form["ano"].isdigit() else 0
+        livro["isbn"] = request.form["isbn"]  # Não converta para int!
         livro["categoria"] = request.form["categoria"]
         salvar_livros(livros)
         return redirect(url_for("listar_livros"))
