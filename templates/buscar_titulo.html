@@ -33,7 +33,7 @@
                         <td class="editora">{{ livro.editora }}</td>
                         <td class="ano">{{ livro.ano }}</td>
                         <td class="isbn">{{ livro.isbn }}</td>
-                        <td> <!-- acho que o problema está aqui -->
+                        <td class="botao-salvar"> <!-- estabelecendo esse class eu consigo colocar uma excessão ás regras aplicadas para td no css, pra manter o fundo do "salvar botão" igual a cor de fundo da página -->
                             <form method="POST" action="{{ url_for('save_book') }}" class="save-book-form">
                                 <input type="hidden" name="title" value="{{ livro.titulo }}">
                                 <input type="hidden" name="authors" value="{{ livro.autor }}">
