@@ -217,7 +217,7 @@ table.tabela-busca th {
     height: 40px; /* Ajuste o valor conforme necessário */
 }
 
-table.tabela-busca tr:nth-child(even) {
+table.tabela-busca tr:nth-child(even) td:not(.botao-salvar) { /* Define a cor de fundo para as linhas pares e exclui a coluna do .botao.salvar dessa regra */
     background-color: #f2f2f2;
 }
 
@@ -243,7 +243,6 @@ table.tabela-busca .isbn {
 }
 
 form.save-book-form {
-    background: transparent !important; /* remove o fundo branco */
     display: inline-block; /* Permite ajustar a largura do formulário */
     margin: 0; /* Remove a margem */
     padding: 0; /* Remove o padding */

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Livros{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Autor</title>
+</head>
+<body>
+    <h1>Adicionar Novo Autor</h1>
+    <form method="POST">
+        <label for="nome_autor">Nome do Autor:</label>
+        <input type="text" id="nome_autor" name="nome_autor" required>
+        <button type="submit">Adicionar</button>
+    </form>
+</body>
+</html>
+{% endblock %}
