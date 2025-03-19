@@ -19,16 +19,14 @@
     <input type="text" name="editora" id="editora" required>
 
     <label for="ano">Ano:</label>
-    <input type=int name="ano" id="ano" pattern="\d{4}" minlength="4" maxlength="4" inputmode="numeric" required 
-    title="O ano deve ter exatamente 4 dígitos numéricos">
+    <input type="text" name="ano" id="ano" pattern="\d{4}" minlength="4" maxlength="4" inputmode="numeric" required 
+       title="O ano deve ter exatamente 4 dígitos numéricos">
 
     <label for="categoria">Categoria:</label>
     <input type="text" name="categoria" id="categoria" required>
 
     <button type="submit">Adicionar</button>
 </form>
-
-#para limitar o número de dígitos no campo ISBN e Ano, adicione o seguinte script no final do arquivo: em FRONTEND
 <script>
     document.getElementById('isbn').addEventListener('input', function () {
         this.value = this.value.replace(/\D/g, ''); // Permite apenas números

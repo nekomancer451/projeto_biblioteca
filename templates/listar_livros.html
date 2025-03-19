@@ -9,11 +9,13 @@
     <select name="ordenar_por" id="ordenar_por">
         <option value="titulo_asc">Título (A-Z)</option>
         <option value="titulo_desc">Título (Z-A)</option>
+        <option value="ano_asc">Ano (Menor para Maior)</option>
+        <option value="ano_desc">Ano (Maior para Menor)</option>
     </select>
     <button type="submit">Ordenar</button>
 </form>
 <form method="GET" action="{{ url_for('listar_livros') }}">
-    <input type="text" name="titulo" placeholder="Buscar por título..." value="{{ titulo_busca }}">
+    <input type="text" name="search" placeholder="Buscar por título..." value="{{ search }}">
     <button type="submit">Buscar</button>
 </form>
 
@@ -24,34 +26,33 @@
                 <table>
                     <tr>
                         <td><strong>Nome:</strong></td>
-                        <td>{{ livro["titulo"] }}</td>
+                        <td>{{ livro.titulo }}</td>
                     </tr>
                     <tr>
                         <td><strong>Ano de Publicação:</strong></td>
-                        <td>{{ livro["ano"] }}</td>
+                        <td>{{ livro.ano or "Sem data" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Autor:</strong></td>
-                        <td>{{ livro["autor"] }}</td>
+                        <td>{{ livro.autor.nome }}</td>
                     </tr>
                     <tr>
                         <td><strong>Editora:</strong></td>
-                        <td>{{ livro["editora"] }}</td>
+                        <td>{{ livro.editora or "Sem editora" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Categoria:</strong></td>
-                        <td>{{ livro["categoria"] }}</td>
+                        <td>{{ livro.categoria or "Sem categoria" }}</td>
                     </tr>
                     <tr>
                         <td><strong>ISBN:</strong></td>
-                        <td>{{ livro["isbn"] }}</td>
+                        <td>{{ livro.isbn }}</td>
                     </tr>
                 </table>
                 <div class="buttons">
                     <a href="{{ url_for('editar_livro', isbn=livro.isbn) }}">
                         <button class="edit-button">Editar</button>
                     </a>
-
                     <form method="POST" action="{{ url_for('excluir_livro', isbn=livro.isbn) }}" style="display:inline;" onsubmit="return confirmarExclusao()">
                         <button type="submit" class="delete-button">Excluir</button>
                     </form>

@@ -1,43 +1,18 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% extends "base.html" %}
+    
+    {% block title %}Adicionar Livro{% endblock %}
+    
+    {% block content %} 
 <head>
     <meta charset="UTF-8">
     <title>Catalogação de Livros</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Bem-vinda à Biblioteca</h1>
-    <nav>
-        <a href="{{ url_for('index') }}">Busca por ISBN</a> |
-        <a href="{{ url_for('adicionar_livro') }}">Adicionar Livro Manualmente</a> |
-        <a href="{{ url_for('listar_livros') }}">Listar Livros</a> |
-        <a href="{{ url_for('buscar_livro') }}">Buscar por Título</a>
-    </nav>
-    
-    <h2>Buscar Livro por ISBN</h2>
-    <form method="POST">
-        <label for="isbn">Digite o ISBN:</label>
-        <input type="text" id="isbn" name="isbn" required>
-        <button type="submit">Buscar</button>
-    </form>
-    
-    {% if book_info %}
-        <h3>Resultado da Busca</h3>
-        <p><strong>Título:</strong> {{ book_info.title }}</p>
-        <p><strong>Autores:</strong> {{ book_info.authors | join(', ') if book_info.authors }}</p>
-        <p><strong>Editora:</strong> {{ book_info.publisher if book_info.publisher }}</p>
-        <p><strong>Data de Publicação:</strong> {{ book_info.publishedDate if book_info.publishedDate }}</p>
-        <p><strong>Descrição:</strong> {{ book_info.description }}</p>
-        
-        <!-- Formulário para salvar o livro (campos ocultos) -->
-        <form method="POST" action="{{ url_for('save_book') }}">
-            <input type="hidden" name="title" value="{{ book_info.title }}">
-            <input type="hidden" name="authors" value="{{ book_info.authors | join(', ') if book_info.authors }}">
-            <input type="hidden" name="publisher" value="{{ book_info.publisher if book_info.publisher }}">
-            <input type="hidden" name="published_date" value="{{ book_info.publishedDate if book_info.publishedDate }}">
-            <input type="hidden" name="isbn" value="{{ book_info.isbn }}">
-            <button type="submit">Salvar Livro</button>
-        </form>
-    {% endif %}
+    <div class="header-container">
+        <img src="{{ url_for('static', filename='images/livro.png') }}" alt="Ícone de Livro" class="book-icon">
+        <h1>Bem-vinda à Biblioteca</h1>
+    </div>
 </body>
 </html>
+{% endblock %}

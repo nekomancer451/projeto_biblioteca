@@ -266,3 +266,58 @@ form.save-book-form button {
 form.save-book-form button:hover {
     opacity: 0.8; /* Efeito visual ao passar o mouse sobre os botões */
 }
+
+/* Posiciona o logout no topo esquerdo */
+.logout-section {
+    position: absolute; /* Fixa no topo mesmo ao rolar */
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    flex-direction: column; /* Organiza os elementos na vertical */
+    gap: 5px; /* Espaço entre o texto e o botão */
+    background-color: #f8f9fa; /* Cor de fundo suave */
+    background-color: transparent; /* Remove o fundo */
+    padding: 0; /* Remove o padding */
+    z-index: 1000;
+    margin-right: 20px; /* Espaço à direita para não colar na borda */
+    margin-top: 10px;
+}
+
+/* Estiliza o botão "Sair" */
+.logout-section button {
+    background-color: transparent;
+    color: #333; /* Cor neutra */
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline; /* Sublinhado para parecer um link */
+}
+
+.logout-section button:hover {
+    color: #c82333; /* Vermelho mais escuro no hover */
+}
+
+
+
+/* ICONE DE H1 NO INDEX */
+/* Container do ícone e título */
+.header-container {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espaço entre ícone e texto */
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* Estilo do ícone */
+.book-icon {
+    width: 40px; /* Ajuste conforme necessário */
+    height: 30px;
+}
+
+/* Ajuste do título */
+.header-container h1 {
+    margin: 0; /* Remove margem padrão do h1 */
+    font-size: 1.8em;
+}

@@ -1,0 +1,7 @@
+pip install flask
+pip install flask-login
+
+python --version
+
+#use no terminal
+pip install -r requirements.txt

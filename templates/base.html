@@ -6,11 +6,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <div class="logout-section">
+        <p>Olá, {{ current_user.username }}! 👋</p>
+        <button onclick="window.location.href='{{ url_for('logout') }}'">Sair</button>
+    </div>
     <nav>
-        <a href="{{ url_for('index') }}">Busca por ISBN</a> |
         <a href="{{ url_for('adicionar_livro') }}">Adicionar Livro Manualmente</a> |
         <a href="{{ url_for('listar_livros') }}">Listar Livros</a> |
-        <a href="{{ url_for('buscar_livro') }}">Buscar por Título</a>
+        <a href="{{ url_for('buscar_isbn') }}">Busca por ISBN</a> |
+        <a href="{{ url_for('buscar_titulo') }}">Buscar por Título</a>
     </nav>
 
     {% block content %}
