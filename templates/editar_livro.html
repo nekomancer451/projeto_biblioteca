@@ -14,8 +14,8 @@
         <input type="text" id="titulo" name="titulo" value="{{ livro.titulo }}" required><br>
         
         <label for="autor">Autor:</label>
-        <input type="text" id="autor" name="autor" value="{{ livro.autor }}" required><br>
-        
+        <input type="text" name="autor" id="autor" class="form-control" value="{{ livro.autor.nome_principal }}">
+                
         <label for="editora">Editora:</label>
         <input type="text" id="editora" name="editora" value="{{ livro.editora }}" required><br>
         

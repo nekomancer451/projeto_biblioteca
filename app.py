@@ -1,70 +1,83 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_mail import Mail, Message
 import requests
 import logging
-import sqlite3
+import re
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.exc import IntegrityError
+import random
+import string 
 
 app = Flask(__name__)
-app.secret_key = "sua_chave_secreta"  # Substitua por uma chave secreta real
+app.secret_key = "sua_chave_secreta"
 
-# Configurações do Flask-SQLAlchemy
-app.config['SECRET_KEY'] = 'sua_chave_secreta'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
-db = SQLAlchemy(app)  # Inicializa SQLAlchemy após as configurações
-
-# Modelo de Usuário
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+# Configurações do Banco de Dados
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///biblioteca.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 # Modelos
-class Author(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(120), unique=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(200), nullable=False)
-    autor_id = db.Column(db.Integer, db.ForeignKey('author.id'), nullable=False)
-    autor = db.relationship('Author', backref=db.backref('books', lazy=True))
+    autor = db.Column(db.String(), nullable=False)
     isbn = db.Column(db.String(13), unique=True, nullable=False)
     editora = db.Column(db.String(120))
-    ano = db.Column(db.Integer)
+    ano = db.Column(db.Integer())
     categoria = db.Column(db.String(50))
-    sinopse = db.Column(db.Text)
+    sinopse = db.Column(db.Text())
     capa_url = db.Column(db.String(200))
     status = db.Column(db.String(20), default='disponivel')
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
 
-# Inicializa o LoginManager
+# Inicialização do LoginManager
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
-# Cria o banco de dados (caso ainda não exista)
 with app.app_context():
     db.create_all()
 
-# Configuração do logging
-logging.basicConfig(level=logging.DEBUG)
+# Configuração do Flask-Mail
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = "seuemail@gmail.com"
+app.config["MAIL_PASSWORD"] = "suasenha"
+app.config["MAIL_DEFAULT_SENDER"] = "seuemail@gmail.com"
 
-# Rota principal
+mail = Mail(app)
+
+# Função para gerar token aleatório
+def gerar_token():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=32))
+
+# Tempo de expiração do token (30 minutos)
+TOKEN_EXPIRATION_TIME = timedelta(minutes=30)
+
+# Dicionário para armazenar tokens e horários de geração
+tokens_verificacao = {}
+
+# Rota principal (dashboard)
 @app.route("/")
 @login_required
 def dashboard():
     return render_template("index.html")
 
-# Rotas de autenticação
+# Rota de login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -74,25 +87,70 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user)
             next_page = request.args.get('next')
-            return redirect(url_for("dashboard"))
-        return "Login inválido. Verifique o nome de usuário e a senha.", 401
+            return redirect(next_page) if next_page else redirect(url_for("dashboard"))
+        flash("Login inválido. Verifique o nome de usuário e a senha.", "danger")
+        return redirect(url_for("login"))
     return render_template("login.html")
 
-@app.route('/registro', methods=['GET', 'POST'])
+# Rota de registro
+# Rota de registro
+@app.route("/registro", methods=["GET", "POST"])
 def registro():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = generate_password_hash(request.form.get('password'))
-        novo_usuario = User(username=username, email=email, password=password)
-        db.session.add(novo_usuario)
-        db.session.commit()
-        return redirect(url_for('login'))
-    return render_template('registro.html')
+    if request.method == "POST":
+        email = request.form["email"]
+        username = request.form["username"]
+        password = request.form["password"]
+        confirm_password = request.form.get("confirm_password")
+        
+        if password != confirm_password:
+            flash("As senhas não coincidem!", "danger")
+            return redirect(url_for("registro"))
+        
+        # Gere um token único e armazene com o horário atual
+        token = gerar_token()
+        tokens_verificacao[email] = {
+            "token": token,
+            "criado_em": datetime.utcnow()  # Horário UTC
+        }
 
+        # Enviar e-mail de verificação
+        link_verificacao = url_for("verificar_email", token=token, _external=True)
+        mensagem = Message("Confirme seu e-mail", recipients=[email])
+        mensagem.body = f"Olá, {username}!\n\nClique no link para verificar seu e-mail: {link_verificacao}\n\nO link expira em 30 minutos."
+        mail.send(mensagem)
+
+        flash("Um e-mail de verificação foi enviado para você. Confirme seu cadastro!", "info")
+        return redirect(url_for("registro"))
+
+    return render_template("registro.html")
+
+# Rota de verificação de e-mail
+@app.route("/verificar/<token>")
+def verificar_email(token):
+    for email, data in tokens_verificacao.items():
+        token_armazenado = data["token"]
+        criado_em = data["criado_em"]
+
+        # Verifica se o token é válido e se ainda está dentro do tempo de expiração
+        if token_armazenado == token:
+            if datetime.utcnow() - criado_em < TOKEN_EXPIRATION_TIME:
+                flash(f"E-mail {email} verificado com sucesso!", "success")
+                tokens_verificacao.pop(email, None)  # Remove o token após o uso
+                return redirect(url_for("login"))
+            else:
+                flash("Token expirado! Solicite um novo e-mail de verificação.", "danger")
+                tokens_verificacao.pop(email, None)  # Remove token expirado
+                return redirect(url_for("registro"))
+
+    flash("Token inválido ou expirado!", "danger")
+    return redirect(url_for("registro"))
+
+# Rota de logout
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
+    flash("Você saiu da sessão.", "info")
     return redirect(url_for('login'))
 
 # Rota para listar livros
@@ -119,13 +177,11 @@ def listar_livros():
 @app.route("/adicionar_livro", methods=["GET", "POST"])
 @login_required
 def adicionar_livro():
-    autores = Author.query.order_by(Author.nome).all()
     if request.method == "POST":
         try:
-            autor_id = int(request.form["autor"])
             novo_livro = Book(
                 titulo=request.form["titulo"],
-                autor_id=autor_id,
+                autor=request.form["autor"],
                 isbn=request.form["isbn"],
                 editora=request.form["editora"],
                 ano=int(request.form["ano"]) if request.form["ano"].isdigit() else None,
@@ -138,142 +194,123 @@ def adicionar_livro():
             return redirect(url_for("listar_livros"))
         except IntegrityError:
             db.session.rollback()
-            flash('ISBN já cadastrado!', 'danger')
-    return render_template("adicionar_livro.html", autores=autores)
+            flash('Erro: ISBN já cadastrado ou autor inválido!', 'danger')
+        except ValueError as e:
+            flash(f"Erro: {str(e)}", 'danger')
+    return render_template("adicionar_livro.html")
 
-# Rotas de autores
-@app.route("/autores", methods=["GET", "POST"])
-@login_required
-def adicionar_autor():
-    if request.method == "POST":
-        nome_autor = request.form["nome_autor"].strip()
-        if nome_autor:
-            try:
-                novo_autor = Author(nome=nome_autor)
-                db.session.add(novo_autor)
-                db.session.commit()
-                flash('Autor adicionado com sucesso!', 'success')
-            except IntegrityError:
-                db.session.rollback()
-                flash('Este autor já existe!', 'danger')
-        return redirect(url_for('adicionar_autor'))
-    
-    autores = Author.query.order_by(Author.nome).all()
-    return render_template("adicionar_autor.html", autores=autores)
-
-# Rota para buscar ISBN em múltiplas fontes
+# Rota para buscar ISBN em múltiplas fontes (Google Books e Open Library)
 @app.route("/buscar_isbn", methods=["GET", "POST"])
 @login_required
 def buscar_isbn():
     book_info = None
     if request.method == "POST":
         isbn = request.form.get("isbn")
-        # Tenta buscar via Google Books
         google_url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&langRestrict=pt-BR"
-        google_response = requests.get(google_url)
-        if google_response.status_code == 200:
-            google_data = google_response.json()
-            if google_data.get("totalItems", 0) > 0:
-                volume_info = google_data["items"][0]["volumeInfo"]
-                publisher = volume_info.get("publisher", "Sem informação")
-                published_date = volume_info.get("publishedDate", "Sem informação")
-                book_info = {
-                    "title": volume_info.get("title"),
-                    "authors": volume_info.get("authors"),
-                    "publisher": publisher,
-                    "publishedDate": published_date,
-                    "description": volume_info.get("description"),
-                    "isbn": isbn
-                }
-        # Se não encontrar no Google, tenta buscar via Open Library
+        try:
+            google_response = requests.get(google_url, timeout=5)
+            if google_response.status_code == 200:
+                google_data = google_response.json()
+                if google_data.get("totalItems", 0) > 0:
+                    volume_info = google_data["items"][0]["volumeInfo"]
+                    publisher = volume_info.get("publisher", "Sem informação")
+                    published_date = volume_info.get("publishedDate", "Sem informação")
+                    book_info = {
+                        "title": volume_info.get("title"),
+                        "authors": volume_info.get("authors"),
+                        "publisher": publisher,
+                        "publishedDate": published_date,
+                        "description": volume_info.get("description"),
+                        "isbn": isbn
+                    }
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro na requisição para o Google Books: {e}")
+
         if not book_info:
             openlibrary_url = f"https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&format=json&jscmd=data"
-            openlibrary_response = requests.get(openlibrary_url)
-            if openlibrary_response.status_code == 200:
-                openlibrary_data = openlibrary_response.json()
-                key = f"ISBN:{isbn}"
-                if key in openlibrary_data:
-                    data = openlibrary_data[key]
-                    book_info = {
-                        "title": data.get("title"),
-                        "authors": [author["name"] for author in data.get("authors", [])] if data.get("authors") else [],
-                        "publisher": data.get("publishers", [{}])[0].get("name") if data.get("publishers") else "",
-                        "publishedDate": data.get("publish_date"),
-                        "isbn": isbn,
-                        "description": data.get("notes") if isinstance(data.get("notes"), str) else ""
-                    }
+            try:
+                openlibrary_response = requests.get(openlibrary_url, timeout=5)
+                if openlibrary_response.status_code == 200:
+                    openlibrary_data = openlibrary_response.json()
+                    key = f"ISBN:{isbn}"
+                    if key in openlibrary_data:
+                        data = openlibrary_data[key]
+                        book_info = {
+                            "title": data.get("title"),
+                            "authors": [author["name"] for author in data.get("authors", [])] if data.get("authors") else [],
+                            "publisher": data.get("publishers", [{}])[0].get("name") if data.get("publishers") else "",
+                            "publishedDate": data.get("publish_date"),
+                            "isbn": isbn,
+                            "description": data.get("notes") if isinstance(data.get("notes"), str) else ""
+                        }
+            except requests.exceptions.RequestException as e:
+                logging.error(f"Erro na requisição para a Open Library: {e}")
     return render_template("buscar_isbn.html", book_info=book_info)
 
-# Rota para salvar livro vindo da busca por ISBN
+# Rota para salvar livro obtido via busca por ISBN ou título
 @app.route("/save", methods=["POST"])
 @login_required
 def save_book():
     try:
-        # Seleciona o primeiro autor, se houver
-        authors_str = request.form.get("authors")
-        if authors_str:
-            first_author = authors_str.split(",")[0].strip()
-            autor_obj = Author.query.filter_by(nome=first_author).first()
-            if not autor_obj:
-                autor_obj = Author(nome=first_author)
-                db.session.add(autor_obj)
-                db.session.commit()
-            autor_id = autor_obj.id
-        else:
-            autor_id = None
-
+        published_date = request.form.get("publishedDate", "")
+        ano = None
+        if published_date:
+            match = re.search(r'\d{4}', published_date)
+            if match:
+                ano = int(match.group())
+    
         novo_livro = Book(
             titulo=request.form.get("title"),
-            autor_id=autor_id,
+            autor=request.form.get("author") or "Desconhecido",
             isbn=request.form.get("isbn"),
             editora=request.form.get("publisher"),
-            ano=int(request.form.get("publishedDate")[:4]) if request.form.get("publishedDate") else None,
-            categoria="",
+            ano=ano,
+            categoria=request.form.get("categoria", ""),
             sinopse=request.form.get("description", "")
         )
+    
         db.session.add(novo_livro)
         db.session.commit()
         flash("Livro adicionado com sucesso!", "success")
     except IntegrityError:
         db.session.rollback()
-        flash("ISBN já cadastrado!", "danger")
+        flash("Erro: ISBN já cadastrado!", "danger")
     except Exception as e:
         db.session.rollback()
         flash(f"Erro ao salvar livro: {str(e)}", "danger")
-    
     return redirect(url_for("listar_livros"))
 
-# Rota para buscar livro por título
+# Rota para buscar livro por título nas fontes Google Books e Open Library
 @app.route("/buscar_titulo", methods=["GET", "POST"])
 @login_required
 def buscar_titulo():
     resultados = []
     if request.method == "GET" and "titulo" in request.args:
         titulo = request.args.get("titulo")
-        # Busca no Google Books
         google_url = f"https://www.googleapis.com/books/v1/volumes?q={titulo}&langRestrict=pt-BR"
         try:
-            google_response = requests.get(google_url)
+            google_response = requests.get(google_url, timeout=5)
             if google_response.status_code == 200:
                 google_data = google_response.json()
                 for item in google_data.get("items", []):
                     volume_info = item["volumeInfo"]
+                    published_date = volume_info.get("publishedDate", "Sem data")
+                    ano = published_date[:4] if published_date != "Sem data" else "Sem data"
                     resultados.append({
                         "titulo": volume_info.get("title", "Sem título"),
                         "autor": ", ".join(volume_info.get("authors", ["Desconhecido"])),
                         "isbn": volume_info.get("industryIdentifiers", [{}])[0].get("identifier", "Sem ISBN"),
                         "editora": volume_info.get("publisher", "Sem editora"),
-                        "ano": volume_info.get("publishedDate", "Sem data")[:4],
+                        "ano": ano,
                         "descricao": volume_info.get("description", ""),
                         "fonte": "Google Books"
                     })
         except requests.exceptions.RequestException as e:
             logging.error(f"Erro na requisição para o Google Books: {e}")
 
-        # Busca na Open Library
         openlibrary_url = f"https://openlibrary.org/search.json?title={titulo}"
         try:
-            openlibrary_response = requests.get(openlibrary_url)
+            openlibrary_response = requests.get(openlibrary_url, timeout=5)
             if openlibrary_response.status_code == 200:
                 openlibrary_data = openlibrary_response.json()
                 for doc in openlibrary_data.get("docs", []):
@@ -295,21 +332,24 @@ def buscar_titulo():
 @login_required
 def editar_livro(isbn):
     livro = Book.query.filter_by(isbn=isbn).first_or_404()
+    
     if request.method == "POST":
         try:
             livro.titulo = request.form["titulo"]
-            livro.autor_id = int(request.form["autor"])  # Atualiza o autor via ID
+            livro.autor = request.form["autor"]
             livro.editora = request.form["editora"]
             livro.ano = int(request.form["ano"]) if request.form["ano"].isdigit() else None
             livro.categoria = request.form["categoria"]
             livro.sinopse = request.form.get("sinopse", "")
             livro.isbn = request.form["isbn"]
+
             db.session.commit()
             flash('Livro atualizado com sucesso!', 'success')
             return redirect(url_for("listar_livros"))
         except IntegrityError:
             db.session.rollback()
             flash('Erro ao atualizar o livro!', 'danger')
+
     return render_template("editar_livro.html", livro=livro)
 
 # Rota para excluir livro

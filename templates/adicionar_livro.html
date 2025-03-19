@@ -1,45 +1,67 @@
 {% extends "base.html" %}
+{% block title %}Adicionar Livro{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 600px;">
+    <h2 class="mb-4">Adicionar Livro Manualmente</h2>
     
-    {% block title %}Adicionar Livro{% endblock %}
-    
-    {% block content %} 
-<h2>Adicionar Livro Manualmente</h2>
-<form method="POST">
-    <label for="titulo">Título:</label>
-    <input type="text" name="titulo" id="titulo" required>
+    <form method="POST" id="livroForm">
+        <!-- Campo Autor Simplificado -->
+        <div class="mb-3">
+            <label for="autor" class="form-label fw-bold">Autor:</label>
+            <input type="text" name="autor" id="autor" class="form-control" required>
+        </div>
 
-    <label for="autor">Autor:</label>
-    <input type="text" name="autor" id="autor" required>
+        <!-- Campos do Livro -->
+        <div class="card p-3">
+            <div class="mb-3">
+                <label for="titulo" class="form-label fw-bold">Título:</label>
+                <input type="text" name="titulo" id="titulo" class="form-control" required>
+            </div>
 
-    <label for="isbn">ISBN:</label>
-    <input type=int name="isbn" id="isbn" pattern="\d{10,13}" minlength="10" maxlength="13" inputmode="numeric" required 
-    title="O ISBN deve ter entre 10 e 13 dígitos numéricos">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="isbn" class="form-label fw-bold">ISBN:</label>
+                    <input type="text" name="isbn" id="isbn" class="form-control" 
+                           pattern="\d{10,13}" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label for="ano" class="form-label fw-bold">Ano:</label>
+                    <input type="text" name="ano" id="ano" class="form-control" 
+                           pattern="\d{4}" required>
+                </div>
+            </div>
 
-    <label for="editora">editora:</label>
-    <input type="text" name="editora" id="editora" required>
+            <div class="mb-3 mt-3">
+                <label for="editora" class="form-label fw-bold">Editora:</label>
+                <input type="text" name="editora" id="editora" class="form-control" required>
+            </div>
 
-    <label for="ano">Ano:</label>
-    <input type="text" name="ano" id="ano" pattern="\d{4}" minlength="4" maxlength="4" inputmode="numeric" required 
-       title="O ano deve ter exatamente 4 dígitos numéricos">
+            <div class="mb-3">
+                <label for="categoria" class="form-label fw-bold">Categoria:</label>
+                <input type="text" name="categoria" id="categoria" class="form-control" required>
+            </div>
+        </div>
 
-    <label for="categoria">Categoria:</label>
-    <input type="text" name="categoria" id="categoria" required>
+        <button type="submit" class="btn btn-primary mt-4 w-100 py-2">
+            <i class="bi bi-save me-2"></i>Adicionar Livro
+        </button>
+    </form>
+</div>
+{% endblock %}
 
-    <button type="submit">Adicionar</button>
-</form>
+{% block scripts %}
 <script>
-    document.getElementById('isbn').addEventListener('input', function () {
-        this.value = this.value.replace(/\D/g, ''); // Permite apenas números
-        if (this.value.length > 13) {
-            this.value = this.value.slice(0, 13); // Limita a 13 dígitos
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Validação de campos numéricos
+    document.getElementById('isbn').addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 13);
     });
 
-    document.getElementById('ano').addEventListener('input', function () {
-        this.value = this.value.replace(/\D/g, ''); // Permite apenas números
-        if (this.value.length > 4) {
-            this.value = this.value.slice(0, 4); // Limita a 4 dígitos
-        }
+    document.getElementById('ano').addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 4);
     });
+});
 </script>
 {% endblock %}
