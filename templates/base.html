@@ -8,7 +8,6 @@
 <body>
     <div class="logout-section">
         <p>Olá, {{ current_user.username }}! 👋</p>
-        <button onclick="window.location.href='{{ url_for('logout') }}'">Sair</button>
     </div>
     <nav>
         <a href="{{ url_for('adicionar_livro') }}">Adicionar Livro Manualmente</a> |
@@ -17,7 +16,39 @@
         <a href="{{ url_for('buscar_titulo') }}">Buscar por Título</a>
     </nav>
 
+    <!-- Ícone do Menu Hambúrguer -->
+    <div id="hamburger-container">
+        <button id="hamburger-button" onclick="toggleSidebar()">☰</button>
+    </div>
+
+    <!-- Sidebar (Agora do lado esquerdo) -->
+    <div id="sidebar" class="sidebar">
+        <ul>
+            {% if current_user.is_admin %}
+            <li><a href="{{ url_for('criar_usuario_admin') }}">Criar Usuário</a></li>
+            {% endif %}
+            <li><button onclick="window.location.href='{{ url_for('logout') }}'">Sair</button></li>
+        </ul>
+    </div>
+
     {% block content %}
     {% endblock %}
+
+    <script>
+        function toggleSidebar() {
+            let sidebar = document.getElementById("sidebar");
+            let button = document.getElementById("hamburger-container");
+
+            if (sidebar.style.width === "250px") {
+                sidebar.style.width = "0";
+                button.style.left = "20px"; // volta a posição inicial
+            } else {
+                sidebar.style.width = "250px";
+                setTimeout(() => {
+                    button.style.left = "270px"; // fica ao lado do menu
+                }, 300); //aguarda a transição do sidebar
+            }
+        }    
+    </script>
 </body>
 </html>

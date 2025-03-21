@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Livros{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Usuário</title>
+</head>
+<body>
+    <h1>Criar Novo Usuário</h1>
+    <form method="POST">
+        <label for="username">Nome de usuário:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <label for="confirm_password">Confirmar Senha:</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
+        <br>
+        <button type="submit">Criar Usuário</button>
+    </form>
+    <br>
+    <a href="{{ url_for('dashboard') }}">Voltar para o Dashboard</a>
+</body>
+</html>
+{% endblock %}

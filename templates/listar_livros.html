@@ -4,16 +4,20 @@
 
 {% block content %}
 <h1>Lista de Livros</h1>
+
+<!-- Formulário de Ordenação -->
 <form method="GET" action="{{ url_for('listar_livros') }}">
     <label for="ordenar_por">Ordenar por:</label>
     <select name="ordenar_por" id="ordenar_por">
-        <option value="titulo_asc">Título (A-Z)</option>
-        <option value="titulo_desc">Título (Z-A)</option>
-        <option value="ano_asc">Ano (Menor para Maior)</option>
-        <option value="ano_desc">Ano (Maior para Menor)</option>
+        <option value="titulo_asc" {% if ordenar_por == 'titulo_asc' %}selected{% endif %}>Título (A-Z)</option>
+        <option value="titulo_desc" {% if ordenar_por == 'titulo_desc' %}selected{% endif %}>Título (Z-A)</option>
+        <option value="ano_asc" {% if ordenar_por == 'ano_asc' %}selected{% endif %}>Ano (Menor para Maior)</option>
+        <option value="ano_desc" {% if ordenar_por == 'ano_desc' %}selected{% endif %}>Ano (Maior para Menor)</option>
     </select>
     <button type="submit">Ordenar</button>
 </form>
+
+<!-- Formulário de Busca -->
 <form method="GET" action="{{ url_for('listar_livros') }}">
     <input type="text" name="search" placeholder="Buscar por título..." value="{{ search }}">
     <button type="submit">Buscar</button>
@@ -34,7 +38,7 @@
                     </tr>
                     <tr>
                         <td><strong>Autor:</strong></td>
-                        <td>{{ livro.autor.nome }}</td>
+                        <td>{{ livro.autor or "Sem autor" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Editora:</strong></td>
@@ -63,7 +67,9 @@
 {% else %}
     <p>Nenhum livro cadastrado.</p>
 {% endif %}
+
 {% endblock %}
+
 <script>
     function confirmarExclusao() {
         return confirm("Tem certeza que deseja excluir este livro?");

@@ -321,3 +321,59 @@ form.save-book-form button:hover {
     margin: 0; /* Remove margem padrão do h1 */
     font-size: 1.8em;
 }
+
+/* -----------------menu hamburguer ------------- */
+
+/* Container do Menu Hambúrguer */
+#hamburger-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    transition: left 0.3s ease-in-out; /* Adiciona transição suave ao abrir e fechar o menu */
+}
+
+/* Botão do Menu */
+#hamburger-button {
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2374AB;
+}
+
+/* Sidebar */
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0; 
+    background-color: #2374AB;
+    overflow-x: hidden;
+    transition: width 0.3s;
+    padding-top: 60px;
+}
+
+/* Links da Sidebar */
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: center;
+}
+
+.sidebar ul li {
+    padding: 15px;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    font-size: 20px;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #575757;
+}
